@@ -28,7 +28,7 @@ def _executar_pipeline(limit: int | None) -> int:
     if limit is not None:
         logger.info("Modo amostra: limit=%d", limit)
     try:
-        gerar_clientes(cfg)
+        gerar_clientes(cfg, limit=limit)
         ingestar(cfg)
         validation.validar(cfg)
         transformation.transformar(cfg)

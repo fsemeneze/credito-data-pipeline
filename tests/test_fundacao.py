@@ -8,9 +8,12 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from pathlib import Path
 
 import credito_pipeline
 from credito_pipeline.config import load_config
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_versao_definida():
@@ -42,8 +45,23 @@ def test_cli_reporta_versao():
     assert credito_pipeline.__version__ in resultado.stdout
 
 
-def test_cli_run_bloqueado_até_fase_1():
-    # Comandos do pipeline ainda não implementados: saída controlada, sem traceback.
+def test_cli_run_bloqueado_ate_fase_1(tmp_path, monkeypatch):
+    """Com comandos do pipeline ainda não implementados: saída controlada, sem traceback."""
+    import credito_pipeline.cli as cli_mod  # noqa: F401 — garante import da CLI antes do subprocess
+    from credito_pipeline.config import GenerationConfig, Paths, PipelineConfig
+
+    paths = Paths(
+        root=PROJECT_ROOT,
+        data=PROJECT_ROOT / "data",
+        raw=tmp_path / "raw",
+        trusted=tmp_path / "trusted",
+        curated=tmp_path / "curated",
+    )
+    gen = GenerationConfig(n_clientes=10, meses_historico=2, mes_final="2026-09", seed=1)
+    monkeypatch.setattr(
+        "credito_pipeline.config.load_config", lambda: PipelineConfig(paths=paths, generation=gen)
+    )
+
     resultado = subprocess.run(
         [sys.executable, "-m", "credito_pipeline.cli", "run", "--limit", "10"],
         capture_output=True,

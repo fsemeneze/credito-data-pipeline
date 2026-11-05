@@ -34,6 +34,7 @@ class GenerationConfig:
 
     n_clientes: int = 500_000
     meses_historico: int = 24
+    mes_final: str = "2026-09"
     seed: int = 42
 
 
