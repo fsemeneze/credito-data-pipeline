@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Ambientes
+.venv/
+venv/
+.env
+
+# Ferramentas
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Dados: só o dataset de calibração (contrato de referência) é versionado.
+data/*
+!data/creditos_clientes.csv
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
