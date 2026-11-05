@@ -78,11 +78,13 @@ tests/
 ## Roadmap
 
 - [x] **Fase 0 — Fundação:** estrutura modular, `pyproject`, CI (ruff + pytest), logging, CLI
-- [ ] **Fase 1 — Pipeline + gerador:** dados sintéticos em escala calibrados no dataset real, validação com pandera, testes unitários
+- [x] **Fase 1 — Pipeline + gerador:** dados sintéticos em escala calibrados no dataset real, validação com pandera, testes unitários
   - [x] Módulo de calibração (dataset real como contrato de referência)
   - [x] Gerador sintético: bootstrap com reposição + snapshots mensais + inadimplência como cadeia de Markov calibrada na taxa real
-  - [ ] Validação com pandera (contrato de dados)
-  - [ ] Transformação e camadas trusted/curated
+  - [x] Validação com pandera (contrato trusted, rejeição linha a linha, gate de taxa de rejeição)
+  - [x] Transformação (coerção do raw + features da curated) e carga (trusted/curated particionados, relatório de qualidade)
+  - [x] CLI `credito run --limit N` executando o pipeline de ponta a ponta
+- [ ] **Fase 2 — Orquestração e storage:** Airflow (DAG incremental por mês, backfill, retries), Parquet particionado, S3/MinIO
 - [ ] **Fase 2 — Orquestração e storage:** Airflow (DAG incremental por mês, backfill, retries), Parquet particionado, S3/MinIO
 - [ ] **Fase 3 — Fechamento:** análise consumindo a camada curated, benchmark de performance, README final
 

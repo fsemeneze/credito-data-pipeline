@@ -33,6 +33,7 @@ def _config(tmp_path: Path, n: int = 50_000, meses: int = 6) -> PipelineConfig:
         raw=tmp_path / "raw",
         trusted=tmp_path / "trusted",
         curated=tmp_path / "curated",
+        metrics=tmp_path / "metrics",
     )
     gen = GenerationConfig(n_clientes=n, meses_historico=meses, mes_final="2026-09", seed=7)
     return PipelineConfig(paths=paths, generation=gen)

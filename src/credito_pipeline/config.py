@@ -21,6 +21,7 @@ class Paths:
     raw: Path = field(default=PROJECT_ROOT / "data" / "raw")
     trusted: Path = field(default=PROJECT_ROOT / "data" / "trusted")
     curated: Path = field(default=PROJECT_ROOT / "data" / "curated")
+    metrics: Path = field(default=PROJECT_ROOT / "data" / "metrics")
 
     @property
     def seed_dataset(self) -> Path:

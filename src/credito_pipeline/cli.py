@@ -1,9 +1,10 @@
 """CLI do pipeline.
 
-Uso na fase 0 (os comandos ainda não estão implementados)::
+Uso::
 
     credito --version
-    credito run --limit 1000    # executa o pipeline com amostra pequena
+    credito run --limit 1000    # amostra de 1000 clientes, roda em segundos
+    credito run                 # volume completo (500 mil clientes x 24 meses)
 """
 
 from __future__ import annotations
@@ -13,29 +14,28 @@ import sys
 
 import credito_pipeline
 from credito_pipeline import config as _config
-from credito_pipeline import transformation, validation
+from credito_pipeline import load, transformation, validation
 from credito_pipeline.generation import gerar_clientes
 from credito_pipeline.ingestion import ingestar
-from credito_pipeline.load import carregar
 from credito_pipeline.log import get_logger, setup_logging
 
 logger = get_logger("cli")
 
 
 def _executar_pipeline(limit: int | None) -> int:
-    """Executa o pipeline de ponta a ponta (gera -> valida -> transforma -> carrega)."""
+    """Executa o pipeline de ponta a ponta: gerar, ingerir, validar,
+    transformar e carregar."""
     cfg = _config.load_config()
     if limit is not None:
-        logger.info("Modo amostra: limit=%d", limit)
-    try:
-        gerar_clientes(cfg, limit=limit)
-        ingestar(cfg)
-        validation.validar(cfg)
-        transformation.transformar(cfg)
-        carregar(cfg)
-    except NotImplementedError as exc:
-        logger.error("Etapa não implementada: %s", exc)
-        return 2
+        logger.info("Modo amostra: limit=%d clientes", limit)
+    gerar_clientes(cfg, limit=limit)
+    raw = ingestar(cfg)
+    coerced = transformation.coercir(raw)
+    trusted, relatorio = validation.validar(coerced)
+    curated = transformation.enriquecer(trusted)
+    load.carregar(trusted, cfg, camada="trusted", relatorio=relatorio.to_dict())
+    load.carregar(curated, cfg, camada="curated")
+    logger.info("Pipeline concluído com sucesso")
     return 0
 
 

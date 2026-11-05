@@ -56,16 +56,15 @@ def test_cli_run_bloqueado_ate_fase_1(tmp_path, monkeypatch):
         raw=tmp_path / "raw",
         trusted=tmp_path / "trusted",
         curated=tmp_path / "curated",
+        metrics=tmp_path / "metrics",
     )
     gen = GenerationConfig(n_clientes=10, meses_historico=2, mes_final="2026-09", seed=1)
     monkeypatch.setattr(
         "credito_pipeline.config.load_config", lambda: PipelineConfig(paths=paths, generation=gen)
     )
 
-    resultado = subprocess.run(
-        [sys.executable, "-m", "credito_pipeline.cli", "run", "--limit", "10"],
-        capture_output=True,
-        text=True,
-    )
-    assert resultado.returncode == 2
-    assert "Implementado na fase 1" in (resultado.stderr + resultado.stdout)
+    # Roda a funcao de execucao diretamente (monkeypatch so vale neste processo).
+    rc = cli_mod._executar_pipeline(limit=10)
+    assert rc == 0
+    assert len(list(paths.trusted.glob("ref_month=*/dados.parquet"))) == 2
+    assert len(list(paths.curated.glob("ref_month=*/dados.parquet"))) == 2
